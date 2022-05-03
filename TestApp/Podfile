@@ -1,0 +1,7 @@
+target 'TestApp' do
+  use_frameworks!
+
+  pod 'EMLDude', :path => "../EMLDude/", :testspecs => ['Tests']
+#  pod 'SwiftLint'
+
+end
