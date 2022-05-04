@@ -16,7 +16,8 @@ internal final class ImageContentDecoder: ContentDecoding {
 
 
         let transeferEncoding = headers[ContentKeys.transferEncoding.rawValue].flatMap { ContentTransferEncoding(rawValue: $0) }
-        return ImageContent(subType: subType,
+        return ImageContent(headears: headers,
+                            subType: subType,
                             id: headers[ContentKeys.id.rawValue],
                             charset: contentType.charset,
                             transferEncoding: transeferEncoding,

@@ -13,6 +13,7 @@ public struct TextContent: Content {
         case html
     }
 
+    public let headears: [String : String]
     public let subType: SubTypes
     public let id: String?
     public let charset: Charset?

@@ -47,23 +47,6 @@ internal final class HeaderDecoderTests: XCTestCase {
         XCTAssertEqual(lines.count - 1, model?.components.count)
     }
 
-    func testShouldNotDecodeKeysAfterBoundary() {
-        let lineDecoder = MockLineDecoder()
-        let headerDecoder = HeaderDecoder(line: lineDecoder)
-        let boundary = Boundary(name: "boundary")!
-
-        let lines: [LineModel] = [
-            .boundary(boundary: boundary, position: .start),
-            .key(key: "key", data: "value", originalLine: ""),
-            .key(key: "otherKey", data: "otherValue", originalLine: "")
-        ]
-        lineDecoder.lines = lines
-
-        let model = headerDecoder.header(components: Array(repeating: "component", count: lines.count))
-        XCTAssertTrue(model?.headers.isEmpty == true)
-        XCTAssertEqual(lines.count, model?.components.count, "Need leave boundary line in components")
-    }
-
     func testShouldTestDefaultBehaviorWithCarriage() {
         let lineDecoder = MockLineDecoder()
         let headerDecoder = HeaderDecoder(line: lineDecoder)
@@ -85,29 +68,5 @@ internal final class HeaderDecoderTests: XCTestCase {
             XCTAssertEqual(model?.headers[key], value)
         }
         XCTAssertEqual(lines.count - keysValue.count - 1, model?.components.count, "Should not contains carriage")
-    }
-
-    func testShouldTestDefaultBehaviorWithBoundary() {
-        let lineDecoder = MockLineDecoder()
-        let headerDecoder = HeaderDecoder(line: lineDecoder)
-        let boundary = Boundary(name: "boundary")!
-
-        let keysValue = [
-            ("Check", "Key"),
-            ("Second", "SecondKey"),
-            ("Third", "ThirdKey")
-        ]
-
-        lineDecoder.lines = keysValue.map { LineModel.key(key: $0.0, data: $0.1, originalLine: "Nothing") }
-        lineDecoder.lines.append(.boundary(boundary: boundary, position: .start))
-        lineDecoder.lines.append(contentsOf: Array(repeating: LineModel.data("data"), count: 10))
-
-        let lines = lineDecoder.lines
-        let model = headerDecoder.header(components: Array(repeating: "component", count: lines.count))
-
-        keysValue.forEach { key, value in
-            XCTAssertEqual(model?.headers[key], value)
-        }
-        XCTAssertEqual(lines.count - keysValue.count, model?.components.count, "Should leave boundary line in components")
     }
 }

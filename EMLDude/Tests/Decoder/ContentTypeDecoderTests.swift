@@ -66,14 +66,19 @@ internal final class ContentTypeDecoderTests: XCTestCase {
     }
 
     func testShouldDecodeBoundary() {
-        let contentTypeDecoder = ContentTypeDecoder()
-
         let boundary = Boundary(name: "isIsTesBoundary")!
-        
-        let key = "Content-Type"
-        let data = "text/other;charset=\(Charset.iso88591.rawValue);boundary=\(boundary.name)"
-        let headers = [key: data]
-        let model = contentTypeDecoder.contentType(headers: headers)
-        XCTAssertEqual(boundary.name, model?.boundary?.name)
+        let contentTypeDecoder = ContentTypeDecoder()
+        let charset = Charset.iso88591
+
+        func test(data: String) {
+            let key = "Content-Type"
+            let headers = [key: data]
+            let model = contentTypeDecoder.contentType(headers: headers)
+            XCTAssertEqual(boundary.name, model?.boundary?.name)
+            XCTAssertEqual(charset, model?.charset)
+        }
+
+        test(data: "text/other;charset=\(charset.rawValue);boundary=\(boundary.name)")
+        test(data: "text/other;boundary=\(boundary.name);charset=\(Charset.iso88591.rawValue)")
     }
 }

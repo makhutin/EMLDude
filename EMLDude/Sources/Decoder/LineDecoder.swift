@@ -14,7 +14,7 @@ internal protocol LineDecoding {
 enum LineModel {
     case key(key: String, data: String, originalLine: String)
     case data(String)
-    case boundary(boundary: Boundary, position: BoundaryPosition)
+    case boundary(position: BoundaryPosition)
     case carriage(String)
 }
 
@@ -59,14 +59,12 @@ internal final class LineDecoder: LineDecoding {
         if let boundary = boundary {
             switch line.replacingOccurrences(of: Constants.carriage, with: "") {
             case boundary.middle:
-                return .boundary(boundary: boundary, position: .middle)
+                return .boundary(position: .middle)
             case boundary.end:
-                return .boundary(boundary: boundary, position: .end)
+                return .boundary(position: .end)
             default:
                 return nil
             }
-        } else if let boundary = Boundary(rawLine: line) {
-            return .boundary(boundary: boundary, position: .start)
         }
         return nil
     }

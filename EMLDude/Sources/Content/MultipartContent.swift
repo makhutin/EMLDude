@@ -17,6 +17,7 @@ public struct MultipartContent: Content {
         case other // https://www.opennet.ru/docs/RUS/mime_rfc/ for other types need use mixed
     }
 
+    public let headears: [String : String]
     public let subType: SubTypes
     public let id: String?
     public let charset: Charset?

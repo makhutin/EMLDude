@@ -8,7 +8,6 @@
 import Foundation
 
 internal enum BoundaryPosition {
-    case start
     case middle
     case end
 }

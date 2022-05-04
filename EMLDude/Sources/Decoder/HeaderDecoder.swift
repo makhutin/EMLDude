@@ -33,11 +33,8 @@ internal final class HeaderDecoder: HeaderDecoding {
 
         for component in components {
             if shouldDecodeLine {
-                let line = self.lineDecoder.line(line: component, mode: .boundary(boundary: nil))
+                let line = self.lineDecoder.line(line: component, mode: .easy)
                 switch line {
-                case .boundary:
-                    newComponents.append(component.withoutCarriage.withCarriage)
-                    fallthrough
                 case .carriage:
                     key.map { headers[$0] = buffer?.withoutCarriage }
                     key = nil
@@ -49,6 +46,8 @@ internal final class HeaderDecoder: HeaderDecoding {
                     key.map { headers[$0] = buffer?.withoutCarriage }
                     key = newKey
                     buffer = newData
+                default:
+                    break
                 }
             } else {
                 newComponents.append(component.withoutCarriage.withCarriage)

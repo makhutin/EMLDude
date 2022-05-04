@@ -47,7 +47,7 @@ internal final class ContentTypeDecoder: ContentTypeDecoding {
             if let rawCharset = component.lowercased().getPostfixIfPrefix(isEqual: Constants.charsetPrefix) {
                 charset = Charset(rawValue: rawCharset)
             }
-            boundary = Boundary(rawLine: component)
+            boundary = Boundary(rawLine: component) ?? boundary
         }
 
         return ContentTypeModel(type: type, subType: subType, charset: charset, boundary: boundary)

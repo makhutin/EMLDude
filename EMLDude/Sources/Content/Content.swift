@@ -8,10 +8,18 @@
 import Foundation
 
 public protocol Content: CustomStringConvertible {
+    var headears: [String: String] { get }
     var id: String? { get }
     var charset: Charset? { get }
     var transferEncoding: ContentTransferEncoding? { get }
     var type: ContentType { get }
+    var contents: [Content] { get }
+}
+
+extension Content {
+    public var contents: [Content] {
+        return []
+    }
 }
 
 public enum ContentTransferEncoding: String {

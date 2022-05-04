@@ -61,29 +61,6 @@ internal final class LineDecoderTests: XCTestCase {
         }
     }
 
-    func testShoudlNewBoundary() {
-        let lines = [
-            "boundary=\"it is new boundary\"",
-            "boundary=it is new boundary",
-            "boundary=\'it is new boundary\'"
-        ]
-
-        let lineDecoder = LineDecoder()
-        lines.forEach { line in
-            let result = lineDecoder.line(line: line, mode: .boundary(boundary: nil))
-            switch result {
-            case .boundary(let boundary, let pos):
-                guard case BoundaryPosition.start = pos else {
-                    XCTFail()
-                    break
-                }
-                XCTAssertEqual(boundary.name, "itisnewboundary")
-            default:
-                XCTFail()
-            }
-        }
-    }
-
     func testShoudlNotNewBoundary() {
         let lines = [
             "--itisnewboundary",
@@ -100,9 +77,8 @@ internal final class LineDecoderTests: XCTestCase {
         lines.enumerated().forEach { index, line in
             let resutl = lineDecoder.line(line: line, mode: .boundary(boundary: boundary))
             switch resutl {
-            case .boundary(let newBoundary, let pos):
+            case .boundary(let pos):
                 XCTAssertEqual(pos, position[index])
-                XCTAssertEqual(newBoundary.name, boundary?.name)
             default:
                 XCTFail()
             }

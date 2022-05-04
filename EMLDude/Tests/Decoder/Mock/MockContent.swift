@@ -9,9 +9,11 @@ import Foundation
 @testable import EMLDude
 
 internal final class MockContent: Content {
+    var headears: [String : String] = [:]
     var id: String?
     var charset: Charset?
     var transferEncoding: ContentTransferEncoding?
+    var contents: [Content] = []
     let type: ContentType
     let description: String = ""
 
