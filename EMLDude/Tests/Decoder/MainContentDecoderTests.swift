@@ -27,7 +27,7 @@ internal final class MainContentDecoderTests: XCTestCase {
                                                     text: text,
                                                     contentType: contentTypeDecoder)
             let checkHeaders = ["check": "headers"]
-            let checkComponents = ["checkComponents"]
+            let checkRawData = "checkRawData"
             var decoder: MockContentDecoder?
 
             switch type {
@@ -42,7 +42,7 @@ internal final class MainContentDecoderTests: XCTestCase {
             }
 
             decoder?.content = MockContent(type: type)
-            let content = contentDecoder.content(headers: checkHeaders, components: checkComponents)
+            let content = contentDecoder.content(headers: checkHeaders, rawData: checkRawData)
 
             XCTAssertEqual(contentTypeDecoder.headers, checkHeaders)
 
@@ -50,7 +50,7 @@ internal final class MainContentDecoderTests: XCTestCase {
 
             XCTAssertEqual(decoder?.type, type)
             XCTAssertEqual(decoder?.headers, checkHeaders)
-            XCTAssertEqual(decoder?.components, checkComponents)
+            XCTAssertEqual(decoder?.rawData, checkRawData)
             XCTAssertNotNil(content)
         }
     }
@@ -61,15 +61,15 @@ extension MainContentDecoderTests {
         var type: ContentType
         var content: Content?
         var headers: [String: String] = [:]
-        var components: [String] = []
+        var rawData: String?
 
         init(type: ContentType) {
             self.type = type
         }
 
-        func content(contentType: ContentTypeModel, headers: [String : String], components: [String]) -> Content? {
+        func content(contentType: ContentTypeModel, headers: [String : String], rawData: String) -> Content? {
             self.headers = headers
-            self.components = components
+            self.rawData = rawData
             XCTAssertEqual(self.type, contentType.type)
             return self.content
         }

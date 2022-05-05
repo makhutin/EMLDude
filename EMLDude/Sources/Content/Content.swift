@@ -53,7 +53,7 @@ public enum Charset: String {
     case utf8 = "utf-8"
 
     public init?(rawValue: String) {
-        switch rawValue.lowercased() {
+        switch rawValue.withoutQuotes.lowercased() {
         case Charset.usAscii.rawValue:
             self = .usAscii
         case Charset.iso88591.rawValue:

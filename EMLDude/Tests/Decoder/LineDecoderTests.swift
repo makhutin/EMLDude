@@ -18,82 +18,31 @@ internal final class LineDecoderTests: XCTestCase {
         let data = [
             "should: decode",
             "should-decode",
-            "should \"\'decode some data;"
+            "should \"\'\rdecode\n\rsome\rdata;"
         ]
         let lines = zip(keys, data).map { $0.0 + ": " + $0.1 }
 
         let lineDecoder = LineDecoder()
 
-        let boundary = Boundary(name: "\"it is new boundary\"")
-        [LineMode.easy, .boundary(boundary: nil), .boundary(boundary: boundary)].forEach { mode in
-            lines.enumerated().forEach { index, line in
-                let resutl = lineDecoder.line(line: line, mode: mode)
-                switch resutl {
-                case .key(let key, let lineData, let originalLine):
-                    XCTAssertEqual(originalLine, line)
-                    XCTAssertEqual(keys[index], key)
-                    XCTAssertEqual(data[index], lineData)
-                default:
-                    XCTFail()
-                }
-            }
-        }
-    }
-
-    func testEasyShouldDecodeCarrige() {
-        let lines = [
-            "\r",
-            ""
-        ]
-        let lineDecoder = LineDecoder()
-
-        let boundary = Boundary(name: "\"it is new boundary\"")
-        [LineMode.easy, .boundary(boundary: nil), .boundary(boundary: boundary)].forEach { mode in
-            lines.forEach { line in
-                let resutl = lineDecoder.line(line: line, mode: mode)
-                switch resutl {
-                case .carriage(let originalLine):
-                    XCTAssertEqual(originalLine, line)
-                default:
-                    XCTFail()
-                }
-            }
-        }
-    }
-
-    func testShoudlNotNewBoundary() {
-        let lines = [
-            "--itisnewboundary",
-            "--itisnewboundary--",
-        ]
-
-        let position = [
-            BoundaryPosition.middle,
-            BoundaryPosition.end
-        ]
-        let boundary = Boundary(name: "\"it is new boundary\"")
-
-        let lineDecoder = LineDecoder()
         lines.enumerated().forEach { index, line in
-            let resutl = lineDecoder.line(line: line, mode: .boundary(boundary: boundary))
+            let resutl = lineDecoder.line(line: line)
             switch resutl {
-            case .boundary(let pos):
-                XCTAssertEqual(pos, position[index])
+            case .key(let key, let lineData):
+                XCTAssertEqual(keys[index], key)
+                XCTAssertEqual(data[index], lineData, "Should not change line")
             default:
                 XCTFail()
             }
         }
+
     }
 
     func testShoudReturnData() {
-        let moreThan72SymbolsString = String(repeating: "s", count: 73)
-        let boundary = Boundary(name: "\"it is new boundary\"")!
-
+        let boundary = Boundary(name: "\"it is boundary\"")!
         let lines = [
             "foo bar baz",
             "itisnotnewboundary",
             "some:string",
-            "boundary=\(moreThan72SymbolsString)",
             "---\(boundary.name)",
             "---\(boundary.name)---",
             "-\(boundary.name)",
@@ -103,15 +52,13 @@ internal final class LineDecoderTests: XCTestCase {
         ]
 
         let lineDecoder = LineDecoder()
-        [LineMode.easy, .boundary(boundary: nil), .boundary(boundary: boundary)].forEach { mode in
-            lines.forEach { line in
-                let result = lineDecoder.line(line: line, mode: .boundary(boundary: nil))
-                switch result {
-                case .data(let newLine):
-                    XCTAssertEqual(line, newLine)
-                default:
-                    XCTFail()
-                }
+        lines.forEach { line in
+            let result = lineDecoder.line(line: line)
+            switch result {
+            case .data(let newLine):
+                XCTAssertEqual(line, newLine)
+            default:
+                XCTFail()
             }
         }
     }

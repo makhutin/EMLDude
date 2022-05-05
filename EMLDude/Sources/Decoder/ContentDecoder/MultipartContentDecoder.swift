@@ -15,11 +15,8 @@ internal final class MultipartContentDecoder: ContentDecoding {
         self.boundaryDecoder = boundary
     }
 
-    func content(contentType: ContentTypeModel,
-               headers: [String: String],
-               components: [String]) -> Content? {
-        guard components.count > 1,
-              let subType = MultipartContent.SubTypes(rawValue: contentType.subType),
+    func content(contentType: ContentTypeModel, headers: [String : String], rawData: String) -> Content? {
+        guard let subType = MultipartContent.SubTypes(rawValue: contentType.subType),
               let boundary = contentType.boundary else { return nil }
 
         assert(self.mainDecoder != nil, "Main decoder should be exist")
@@ -29,14 +26,14 @@ internal final class MultipartContentDecoder: ContentDecoding {
                                 id: headers[ContentKeys.id.rawValue],
                                 charset: contentType.charset,
                                 transferEncoding: nil,
-                                contents: self.contents(from: components, boundary: boundary))
+                                contents: self.contents(from: rawData, boundary: boundary))
     }
 
-    private func contents(from components: [String], boundary: Boundary) -> [Content] {
+    private func contents(from rawData: String, boundary: Boundary) -> [Content] {
         var contents = [Content]()
-        guard let parts = self.boundaryDecoder.parts(from: components, boundary: boundary) else { return [] }
+        guard let parts = self.boundaryDecoder.parts(from: rawData, boundary: boundary) else { return [] }
         for part in parts {
-            let content = self.mainDecoder?.content(components: part)
+            let content = self.mainDecoder?.content(rawData: part)
             content.map { contents.append($0) }
         }
         return contents

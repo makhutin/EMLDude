@@ -52,7 +52,7 @@ internal final class ContentTypeDecoderTests: XCTestCase {
 
         charsets.forEach { charset in
             let key = "Content-Type"
-            let data = "text/other;charset=\(charset.rawValue)"
+            let data = "text/other;charset=\"\(charset.rawValue)\""
             let defaultHeaders = [key: data]
             let lowerHeaders = [key: data.lowercased()]
             let upperHeaders = [key: data.uppercased()]

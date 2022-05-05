@@ -11,6 +11,9 @@ public struct TextContent: Content {
     public enum SubTypes: String {
         case plain
         case html
+        case richtext
+        case enriched
+        case tabSeparatedValues = "tab-separated-values"
     }
 
     public let headears: [String : String]

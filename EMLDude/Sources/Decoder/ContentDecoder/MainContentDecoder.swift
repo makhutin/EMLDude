@@ -10,20 +10,15 @@ import Foundation
 internal protocol ContentDecoding {
     func content(contentType: ContentTypeModel,
                  headers: [String: String],
-                 components: [String]) -> Content?
+                 rawData: String) -> Content?
 }
 
 internal protocol MainContentDecoding {
     func content(headers: [String: String],
-                 components: [String]) -> Content?
+                 rawData: String) -> Content?
 }
 
 internal final class MainContentDecoder: MainContentDecoding {
-    private enum Constants {
-        static let typeSeporator = "/"
-        static let infoTypeSeporator = ";"
-    }
-
     private let multipart: ContentDecoding
     private let image: ContentDecoding
     private let text: ContentDecoding
@@ -39,12 +34,11 @@ internal final class MainContentDecoder: MainContentDecoding {
         self.contentType = contentType
     }
 
-    func content(headers: [String: String],
-                 components: [String]) -> Content? {
+    func content(headers: [String : String], rawData: String) -> Content? {
         guard let contentModel = self.contentType.contentType(headers: headers) else { return nil }
 
         let decoder = self.decoder(by: contentModel)
-        return decoder?.content(contentType: contentModel, headers: headers, components: components)
+        return decoder?.content(contentType: contentModel, headers: headers, rawData: rawData)
     }
 
     private func decoder(by contentType: ContentTypeModel) -> ContentDecoding? {

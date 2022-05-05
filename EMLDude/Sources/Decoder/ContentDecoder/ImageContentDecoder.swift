@@ -8,9 +8,7 @@
 import Foundation
 
 internal final class ImageContentDecoder: ContentDecoding {
-    func content(contentType: ContentTypeModel,
-               headers: [String: String],
-               components: [String]) -> Content? {
+    func content(contentType: ContentTypeModel, headers: [String : String], rawData: String) -> Content? {
         guard shouldStartDecoding(with: contentType.subType),
               let subType = ImageContent.SubTypes(rawValue: contentType.subType) else { return nil }
 
@@ -21,7 +19,7 @@ internal final class ImageContentDecoder: ContentDecoding {
                             id: headers[ContentKeys.id.rawValue],
                             charset: contentType.charset,
                             transferEncoding: transeferEncoding,
-                            rawData: components.joined())
+                            rawData: rawData.withoutCarriage)
     }
 
     private func shouldStartDecoding(with subType: String) -> Bool {

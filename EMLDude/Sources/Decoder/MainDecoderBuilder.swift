@@ -10,7 +10,7 @@ import Foundation
 internal enum MainDecoderBuilder {
     static func build() -> MainDecoder {
         let line = LineDecoder()
-        let boundary = BoundaryPartsDecoder(line: line)
+        let boundary = BoundaryPartsDecoder()
         let multipart = MultipartContentDecoder(boundary: boundary)
         let image = ImageContentDecoder()
         let text = TextContentDecoder()

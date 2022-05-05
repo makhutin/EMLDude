@@ -17,25 +17,29 @@ internal final class MainDecoder {
     }
 
     func content(from data: Data) throws -> Content? {
-        let components = try self.components(from: data)
-        return self.content(components: components)
-    }
-
-    func content(components: [String]) -> Content? {
-        guard let headerModel = self.headerDecoder.header(components: components),
-              let content = self.mainContentDecoder.content(headers: headerModel.headers, components: headerModel.components) else {
-            return nil
-        }
+        let rawData = try self.rawData(from: data)
+        let content = self.content(rawData: rawData)
         return content
     }
 
-    private func components(from data: Data) throws -> [String] {
-        if let dataText = String(data: data, encoding: .utf8) {
-            let components = dataText.components(separatedBy: "\n")
-            return components
+    func content(rawData: String) -> Content? {
+        guard let headerModel = self.headerDecoder.header(rawData: rawData),
+              let content = self.mainContentDecoder.content(headers: headerModel.headers, rawData: headerModel.rawData) else { return nil }
 
+        return content
+    }
+
+    private func rawData(from data: Data) throws -> String {
+        if let dataText = String(data: data, encoding: .utf8) {
+            return dataText.removeNewLines
         } else {
             throw EMLDudeError.cantDecodeData
         }
+    }
+}
+
+private extension String {
+    var removeNewLines: String {
+        return self.replacingOccurrences(of: "\n", with: "")
     }
 }

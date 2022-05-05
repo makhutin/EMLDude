@@ -20,10 +20,6 @@ extension String {
         return self.removeCharacters(characters: Constants.carriage)
     }
 
-    var withCarriage: String {
-        return self + Constants.carriage
-    }
-
     func removeCharacters(characters: String) -> String {
         var charactersSet = CharacterSet()
         charactersSet.insert(charactersIn: characters)
@@ -37,5 +33,9 @@ extension String {
     func getPostfixIfPrefix(isEqual to: String) -> String? {
         guard self.hasPrefix(to) else { return nil }
         return self.replacingOccurrences(of: to, with: String.empty)
+    }
+
+    var withoutQuotes: String {
+        return self.removeCharacters(characters: "\"\'")
     }
 }

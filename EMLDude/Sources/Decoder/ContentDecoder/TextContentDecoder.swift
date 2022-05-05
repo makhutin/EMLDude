@@ -8,9 +8,7 @@
 import Foundation
 
 internal final class TextContentDecoder: ContentDecoding {
-    func content(contentType: ContentTypeModel,
-               headers: [String: String],
-               components: [String]) -> Content? {
+    func content(contentType: ContentTypeModel, headers: [String : String], rawData: String) -> Content? {
         guard let subType = TextContent.SubTypes(rawValue: contentType.subType) else { return nil }
 
         let transeferEncoding = headers[ContentKeys.transferEncoding.rawValue].flatMap { ContentTransferEncoding(rawValue: $0) }
@@ -19,6 +17,6 @@ internal final class TextContentDecoder: ContentDecoding {
                            id: headers[ContentKeys.id.rawValue],
                            charset: contentType.charset,
                            transferEncoding: transeferEncoding,
-                           rawData: components.joined())
+                           rawData: rawData.withoutCarriage)
     }
 }

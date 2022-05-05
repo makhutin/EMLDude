@@ -11,7 +11,7 @@ import Foundation
 internal final class MockLineDecoder: LineDecoding {
     var lines: [LineModel] = []
 
-    func line(line: String, mode: LineMode) -> LineModel {
+    func line(line: String) -> LineModel {
         guard let lineModel = self.lines.popFirts() else {
             assertionFailure()
             return .data("")
