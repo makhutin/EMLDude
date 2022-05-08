@@ -19,6 +19,7 @@ internal final class ImageContentDecoder: ContentDecoding {
                             id: headers[ContentKeys.id.rawValue],
                             charset: contentType.charset,
                             transferEncoding: transeferEncoding,
+                            name: contentType.name,
                             rawData: rawData.withoutCarriage)
     }
 

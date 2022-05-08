@@ -17,6 +17,7 @@ internal final class TextContentDecoder: ContentDecoding {
                            id: headers[ContentKeys.id.rawValue],
                            charset: contentType.charset,
                            transferEncoding: transeferEncoding,
+                           name: contentType.name,
                            rawData: rawData.withoutCarriage)
     }
 }

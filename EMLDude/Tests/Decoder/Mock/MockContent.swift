@@ -15,6 +15,7 @@ internal final class MockContent: Content {
     var transferEncoding: ContentTransferEncoding?
     var contents: [Content] = []
     let type: ContentType
+    var name: String?
     let description: String = ""
 
     init(type: ContentType) {

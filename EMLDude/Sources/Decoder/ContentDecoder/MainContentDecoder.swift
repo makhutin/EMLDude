@@ -23,14 +23,17 @@ internal final class MainContentDecoder: MainContentDecoding {
     private let image: ContentDecoding
     private let text: ContentDecoding
     private let contentType: ContentTypeDecoding
+    private let application: ContentDecoding
 
     init(multipart: ContentDecoding,
          image: ContentDecoding,
          text: ContentDecoding,
+         application: ContentDecoding,
          contentType: ContentTypeDecoding) {
         self.multipart = multipart
         self.image = image
         self.text = text
+        self.application = application
         self.contentType = contentType
     }
 
@@ -49,6 +52,8 @@ internal final class MainContentDecoder: MainContentDecoding {
             return self.text
         case .image:
             return self.image
+        case .application:
+            return self.application
         default:
             return nil
         }

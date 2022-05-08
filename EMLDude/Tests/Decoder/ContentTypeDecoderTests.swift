@@ -10,8 +10,10 @@ import XCTest
 
 internal final class ContentTypeDecoderTests: XCTestCase {
     func testShouldDecodeTypeCorrect() {
-        let contentTypeDecoder = ContentTypeDecoder()
-        let key = "Content-Type"
+        let parametersDecoder = MockParametersDecoder()
+        let contentTypeDecoder = ContentTypeDecoder(parameter: parametersDecoder)
+        let key = ContentKeys.type.rawValue
+        let checkData = "checkThisData"
         let types: [ContentType] = [
             .application,
             .audio,
@@ -24,26 +26,35 @@ internal final class ContentTypeDecoderTests: XCTestCase {
 
         types.forEach { type in
             let subType = "subType\(type.rawValue)"
-            let headers = [key: "\(type.rawValue)/\(subType)"]
-            let model = contentTypeDecoder.contentType(headers: headers)
+            parametersDecoder.models = [.single(some: "\(type.rawValue)/\(subType)")]
+
+            let model = contentTypeDecoder.contentType(headers: [key: checkData])
+            XCTAssertEqual(parametersDecoder.data, checkData)
+
             XCTAssertEqual(type, model?.type)
             XCTAssertEqual(model?.subType, subType)
         }
     }
 
     func testShouldNotDecodeLine() {
-        let contentTypeDecoder = ContentTypeDecoder()
+        let parametersDecoder = MockParametersDecoder()
+        let contentTypeDecoder = ContentTypeDecoder(parameter: parametersDecoder)
         let headers = ["Other-key": "no need decode"]
         let model = contentTypeDecoder.contentType(headers: headers)
         XCTAssertNil(model)
+        XCTAssertNil(parametersDecoder.data)
 
-        let wrongHeaders = ["Content-Type": "wrongType/mp4"]
+        let typeData = "wrongType/mp4"
+        parametersDecoder.models = [.single(some: typeData)]
+        let wrongHeaders = [ContentKeys.type.rawValue: typeData]
         let modelSecond = contentTypeDecoder.contentType(headers: wrongHeaders)
         XCTAssertNil(modelSecond)
+        XCTAssertEqual(parametersDecoder.data, typeData)
     }
 
     func testShouldDecodeCharset() {
-        let contentTypeDecoder = ContentTypeDecoder()
+        let parametersDecoder = MockParametersDecoder()
+        let contentTypeDecoder = ContentTypeDecoder(parameter: parametersDecoder)
         let charsets: [Charset] = [
             .iso88591,
             .usAscii,
@@ -51,34 +62,42 @@ internal final class ContentTypeDecoderTests: XCTestCase {
         ]
 
         charsets.forEach { charset in
-            let key = "Content-Type"
-            let data = "text/other;charset=\"\(charset.rawValue)\""
-            let defaultHeaders = [key: data]
-            let lowerHeaders = [key: data.lowercased()]
-            let upperHeaders = [key: data.uppercased()]
-            let whiteSpacesHeaders = [key: data.split(separator: ";").joined(separator: "; ")]
-
-            [defaultHeaders, lowerHeaders, upperHeaders, whiteSpacesHeaders].forEach { headers in
-                let model = contentTypeDecoder.contentType(headers: headers)
-                XCTAssertEqual(model?.charset, charset)
-            }
+            let key = ContentKeys.type.rawValue
+            parametersDecoder.models = [
+                .single(some: "\(ContentType.image.rawValue)/Subtype"),
+                .keyValue(key: "charset", value: "\(charset.rawValue)")
+            ]
+            let checkData = "checkData"
+            let model = contentTypeDecoder.contentType(headers: [key: checkData])
+            XCTAssertEqual(model?.charset, charset)
+            XCTAssertEqual(parametersDecoder.data, checkData)
         }
     }
 
     func testShouldDecodeBoundary() {
         let boundary = Boundary(name: "isIsTesBoundary")!
-        let contentTypeDecoder = ContentTypeDecoder()
-        let charset = Charset.iso88591
+        let parametersDecoder = MockParametersDecoder()
+        let contentTypeDecoder = ContentTypeDecoder(parameter: parametersDecoder)
 
-        func test(data: String) {
-            let key = "Content-Type"
-            let headers = [key: data]
-            let model = contentTypeDecoder.contentType(headers: headers)
-            XCTAssertEqual(boundary.name, model?.boundary?.name)
-            XCTAssertEqual(charset, model?.charset)
+        let key = ContentKeys.type.rawValue
+        let checkData = "checkData"
+        parametersDecoder.models = [
+            .single(some: "\(ContentType.image.rawValue)/Subtype"),
+            .keyValue(key: "boundary", value: boundary.name)
+        ]
+        let model = contentTypeDecoder.contentType(headers: [key: checkData])
+        XCTAssertEqual(boundary.name, model?.boundary?.name)
+        XCTAssertEqual(parametersDecoder.data, checkData)
+    }
+}
+
+private extension ContentTypeDecoderTests {
+    final class MockParametersDecoder: ParameterDecoding {
+        var data: String?
+        var models: [ParameterModel] = []
+        func parameters(data: String) -> [ParameterModel] {
+            self.data = data
+            return self.models
         }
-
-        test(data: "text/other;charset=\(charset.rawValue);boundary=\(boundary.name)")
-        test(data: "text/other;boundary=\(boundary.name);charset=\(Charset.iso88591.rawValue)")
     }
 }

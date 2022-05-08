@@ -12,19 +12,21 @@ import XCTest
 
 internal final class MainContentDecoderTests: XCTestCase {
     func testShouldUseCorrectDecoder() {
-        [ContentType.multipart, .image, .text].forEach { type in
+        [ContentType.multipart, .image, .text, .application].forEach { type in
             let multipart = MockContentDecoder(type: .multipart)
             let image = MockContentDecoder(type: .image)
             let text = MockContentDecoder(type: .text)
+            let application = MockContentDecoder(type: .application)
             let contentTypeDecoder = MockContentTypeDecoder()
 
             let subtype = "Test"
             let charset = Charset.iso88591
-            contentTypeDecoder.model = ContentTypeModel(type: type, subType: subtype, charset: charset, boundary: nil)
+            contentTypeDecoder.model = ContentTypeModel(type: type, subType: subtype, charset: charset, boundary: nil, name: nil)
 
             let contentDecoder = MainContentDecoder(multipart: multipart,
                                                     image: image,
                                                     text: text,
+                                                    application: application,
                                                     contentType: contentTypeDecoder)
             let checkHeaders = ["check": "headers"]
             let checkRawData = "checkRawData"
@@ -37,6 +39,8 @@ internal final class MainContentDecoderTests: XCTestCase {
                 decoder = image
             case .text:
                 decoder = text
+            case .application:
+                decoder = application
             default:
                 XCTFail()
             }

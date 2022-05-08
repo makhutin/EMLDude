@@ -25,6 +25,7 @@ internal final class MultipartContentDecoder: ContentDecoding {
                                 subType: subType,
                                 id: headers[ContentKeys.id.rawValue],
                                 charset: contentType.charset,
+                                name: contentType.name,
                                 transferEncoding: nil,
                                 contents: self.contents(from: rawData, boundary: boundary))
     }

@@ -14,11 +14,21 @@ public protocol Content: CustomStringConvertible {
     var transferEncoding: ContentTransferEncoding? { get }
     var type: ContentType { get }
     var contents: [Content] { get }
+    var name: String? { get }
 }
 
 extension Content {
     public var contents: [Content] {
         return []
+    }
+
+    public var generalDescription: String {
+        return [
+            "Content-ID: \(String(describing: self.id))",
+            "Charset: \(String(describing: self.charset?.rawValue))",
+            "Content-Transfer-Encoding: \(String(describing: self.transferEncoding?.rawValue))",
+            "Name: \(String(describing: self.name))"
+        ].joined(separator: "\n")
     }
 }
 

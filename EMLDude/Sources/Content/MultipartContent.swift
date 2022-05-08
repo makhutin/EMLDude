@@ -21,6 +21,7 @@ public struct MultipartContent: Content {
     public let subType: SubTypes
     public let id: String?
     public let charset: Charset?
+    public let name: String?
     public let transferEncoding: ContentTransferEncoding?
 
     public let contents: [Content]
@@ -32,16 +33,11 @@ public struct MultipartContent: Content {
 
 extension MultipartContent: CustomStringConvertible {
     public var description: String {
-        let description: [String?] = [
+        return [
             "Content-Type: multipart/\(self.subType)",
-            (self.id != nil ? "Content-ID: \(self.id ?? "")" : nil),
-            self.charset != nil ? "Charset: \(self.charset?.rawValue ?? "")" : nil,
-            self.transferEncoding != nil ? "Content-Transfer-Encoding: \(self.transferEncoding?.rawValue ?? "")" : nil,
+            self.generalDescription,
             self.contentDescription
-        ]
-        return description
-            .compactMap{ $0 }
-            .joined(separator: "\n")
+        ].joined(separator: "\n")
     }
 
     private var contentDescription: String {

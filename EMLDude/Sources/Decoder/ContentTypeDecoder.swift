@@ -12,6 +12,7 @@ internal struct ContentTypeModel {
     let subType: String
     let charset: Charset?
     let boundary: Boundary?
+    let name: String?
 }
 
 internal protocol ContentTypeDecoding {
@@ -20,36 +21,52 @@ internal protocol ContentTypeDecoding {
 
 internal final class ContentTypeDecoder: ContentTypeDecoding {
     private enum Constants {
-        static let contentType = "Content-Type"
         static let typeSeporator = "/"
-        static let infoTypeSeporator = ";"
-        static let charsetPrefix = "charset="
+        static let charsetKey = "charset"
+        static let nameKey = "name"
+        static let boundaryKey = "boundary"
+    }
+
+    private let parameterDecoder: ParameterDecoding
+
+    init(parameter: ParameterDecoding) {
+        self.parameterDecoder = parameter
     }
 
     func contentType(headers: [String: String]) -> ContentTypeModel? {
-        guard let data = headers[Constants.contentType] else { return nil }
-        
-        let allComponents = data
-            .removeCharacters(charactersSet: .whitespaces)
-            .components(separatedBy: Constants.infoTypeSeporator)
+        guard let data = headers[ContentKeys.type.rawValue] else { return nil }
 
-        let typeData = allComponents
-            .first?
-            .components(separatedBy: Constants.typeSeporator) ?? []
+        let parameters = self.parameterDecoder.parameters(data: data)
+        guard case let .single(typeParameter) = parameters.first else { return nil }
 
+        let typeData = typeParameter.components(separatedBy: Constants.typeSeporator)
         guard typeData.count == 2,
               let type = ContentType(rawValue: typeData.first ?? .empty),
               let subType = typeData.last else { return nil }
 
         var charset: Charset?
         var boundary: Boundary?
-        allComponents.forEach { component in
-            if let rawCharset = component.lowercased().getPostfixIfPrefix(isEqual: Constants.charsetPrefix) {
-                charset = Charset(rawValue: rawCharset)
+        var name: String?
+
+        for parameter in parameters {
+            guard case let .keyValue(key, value) = parameter else { continue }
+
+            switch key {
+            case Constants.charsetKey:
+                charset = Charset(rawValue: value)
+            case Constants.nameKey:
+                name = value
+            case Constants.boundaryKey:
+                boundary = Boundary(name: value)
+            default:
+                break
             }
-            boundary = Boundary(rawLine: component) ?? boundary
         }
 
-        return ContentTypeModel(type: type, subType: subType, charset: charset, boundary: boundary)
+        return ContentTypeModel(type: type,
+                                subType: subType,
+                                charset: charset,
+                                boundary: boundary,
+                                name: name)
     }
 }
