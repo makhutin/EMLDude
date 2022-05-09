@@ -7,18 +7,26 @@
 
 import Foundation
 
-public struct VideoContent {
-    public enum SubTypes {
+public struct VideoContent: Content {
+    public enum SubTypes: String {
+        case quicktime
         case mpeg
+        case mp4
     }
 
+    public var headears: [String : String]
     public let subType: SubTypes
-    public let id: String?
-    public let charset: Charset?
-    public let transferEncoding: ContentTransferEncoding?
-    public let description: String?
+    public let rawData: String
+    public let info: ContentInfo
 
     public var type: ContentType {
         return .video
+    }
+
+    public var description: String {
+        return [
+            "Content-Type: \(self.type.rawValue)/\(self.subType.rawValue)",
+            self.info.description
+        ].joined(separator: "\n")
     }
 }

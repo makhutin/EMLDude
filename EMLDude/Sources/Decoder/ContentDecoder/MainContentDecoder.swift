@@ -20,19 +20,28 @@ internal protocol MainContentDecoding {
 
 internal final class MainContentDecoder: MainContentDecoding {
     private let multipart: ContentDecoding
+    private let video: ContentDecoding
     private let image: ContentDecoding
+    private let audio: ContentDecoding
     private let text: ContentDecoding
-    private let contentType: ContentTypeDecoding
+    private let message: ContentDecoding
     private let application: ContentDecoding
+    private let contentType: ContentTypeDecoding
 
     init(multipart: ContentDecoding,
          image: ContentDecoding,
+         video: ContentDecoding,
+         audio: ContentDecoding,
          text: ContentDecoding,
+         message: ContentDecoding,
          application: ContentDecoding,
          contentType: ContentTypeDecoding) {
         self.multipart = multipart
         self.image = image
+        self.video = video
+        self.audio = audio
         self.text = text
+        self.message = message
         self.application = application
         self.contentType = contentType
     }
@@ -54,8 +63,12 @@ internal final class MainContentDecoder: MainContentDecoding {
             return self.image
         case .application:
             return self.application
-        default:
-            return nil
+        case .video:
+            return self.video
+        case .audio:
+            return self.audio
+        case .message:
+            return self.message
         }
     }
 }

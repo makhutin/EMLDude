@@ -12,10 +12,13 @@ import XCTest
 
 internal final class MainContentDecoderTests: XCTestCase {
     func testShouldUseCorrectDecoder() {
-        [ContentType.multipart, .image, .text, .application].forEach { type in
+        [ContentType.multipart, .image, .video, .audio, .text, .message, .application].forEach { type in
             let multipart = MockContentDecoder(type: .multipart)
             let image = MockContentDecoder(type: .image)
+            let video = MockContentDecoder(type: .video)
+            let audio = MockContentDecoder(type: .audio)
             let text = MockContentDecoder(type: .text)
+            let message = MockContentDecoder(type: .message)
             let application = MockContentDecoder(type: .application)
             let contentTypeDecoder = MockContentTypeDecoder()
 
@@ -25,7 +28,10 @@ internal final class MainContentDecoderTests: XCTestCase {
 
             let contentDecoder = MainContentDecoder(multipart: multipart,
                                                     image: image,
+                                                    video: video,
+                                                    audio: audio,
                                                     text: text,
+                                                    message: message,
                                                     application: application,
                                                     contentType: contentTypeDecoder)
             let checkHeaders = ["check": "headers"]
@@ -37,12 +43,16 @@ internal final class MainContentDecoderTests: XCTestCase {
                 decoder = multipart
             case .image:
                 decoder = image
+            case .video:
+                decoder = video
             case .text:
                 decoder = text
             case .application:
                 decoder = application
-            default:
-                XCTFail()
+            case .message:
+                decoder = message
+            case .audio:
+                decoder = audio
             }
 
             decoder?.content = MockContent(type: type)

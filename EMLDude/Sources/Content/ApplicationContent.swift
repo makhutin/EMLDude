@@ -41,13 +41,10 @@ public struct ApplicationContent: Content {
         }
     }
 
-    public var headears: [String : String]
+    public let headears: [String : String]
     public let subType: SubTypes
-    public let id: String?
-    public let charset: Charset?
-    public let transferEncoding: ContentTransferEncoding?
-    public let name: String?
     public let rawData: String
+    public let info: ContentInfo
 
     public var type: ContentType {
         return .application
@@ -56,7 +53,7 @@ public struct ApplicationContent: Content {
     public var description: String {
         return [
             "Content-Type: \(self.type.rawValue)/\(self.subType)",
-            self.generalDescription
+            self.info.description
         ].joined(separator: "\n")
     }
 }

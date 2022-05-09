@@ -18,18 +18,15 @@ public struct TextContent: Content {
 
     public let headears: [String : String]
     public let subType: SubTypes
-    public let id: String?
-    public let charset: Charset?
-    public let transferEncoding: ContentTransferEncoding?
-    public let name: String?
     public let rawData: String
+    public var info: ContentInfo
 
     public var type: ContentType {
         return .text
     }
 
     public var text: String? {
-        switch transferEncoding {
+        switch self.info.transferEncoding {
         case .base64:
             let data = Data(base64Encoded: self.rawData, options: .ignoreUnknownCharacters)
             return data.flatMap { String.init(data: $0, encoding:.utf8) }
@@ -41,7 +38,7 @@ public struct TextContent: Content {
     public var description: String {
         return [
             "Content-Type: \(self.type.rawValue)/\(self.subType.rawValue)",
-            self.generalDescription
+            self.info.description
         ].joined(separator: "\n")
     }
 }

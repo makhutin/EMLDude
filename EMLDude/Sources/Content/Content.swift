@@ -9,26 +9,15 @@ import Foundation
 
 public protocol Content: CustomStringConvertible {
     var headears: [String: String] { get }
-    var id: String? { get }
-    var charset: Charset? { get }
-    var transferEncoding: ContentTransferEncoding? { get }
     var type: ContentType { get }
     var contents: [Content] { get }
-    var name: String? { get }
+    var rawData: String { get }
+    var info: ContentInfo { get }
 }
 
 extension Content {
     public var contents: [Content] {
         return []
-    }
-
-    public var generalDescription: String {
-        return [
-            "Content-ID: \(String(describing: self.id))",
-            "Charset: \(String(describing: self.charset?.rawValue))",
-            "Content-Transfer-Encoding: \(String(describing: self.transferEncoding?.rawValue))",
-            "Name: \(String(describing: self.name))"
-        ].joined(separator: "\n")
     }
 }
 

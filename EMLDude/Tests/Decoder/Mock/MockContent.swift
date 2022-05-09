@@ -10,13 +10,11 @@ import Foundation
 
 internal final class MockContent: Content {
     var headears: [String : String] = [:]
-    var id: String?
-    var charset: Charset?
-    var transferEncoding: ContentTransferEncoding?
+    var type: ContentType
+    var rawData: String = ""
     var contents: [Content] = []
-    let type: ContentType
-    var name: String?
-    let description: String = ""
+    var info: ContentInfo = ContentInfo()
+    var description: String = ""
 
     init(type: ContentType) {
         self.type = type

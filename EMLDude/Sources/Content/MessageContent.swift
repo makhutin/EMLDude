@@ -7,20 +7,27 @@
 
 import Foundation
 
-public struct MessageContent {
-    public enum SubTypes {
+public struct MessageContent: Content {
+    public enum SubTypes: String {
         case rfc822 // main
         case partial
-        case externalBody // External-body
+        case externalBody = "external-body"
+        case news
     }
 
+    public var headears: [String : String]
     public let subType: SubTypes
-    public let id: String?
-    public let charset: Charset?
-    public let transferEncoding: ContentTransferEncoding?
-    public let description: String?
+    public var rawData: String
+    public var info: ContentInfo
 
     public var type: ContentType {
         return .message
+    }
+
+    public var description: String {
+        return [
+            "Content-Type: \(self.type.rawValue)/\(self.subType.rawValue)",
+            self.info.description
+        ].joined(separator: "\n")
     }
 }

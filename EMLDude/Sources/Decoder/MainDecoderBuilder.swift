@@ -14,12 +14,18 @@ internal enum MainDecoderBuilder {
         let boundary = BoundaryPartsDecoder()
         let multipart = MultipartContentDecoder(boundary: boundary)
         let image = ImageContentDecoder()
+        let video = VideoContentDecoder()
+        let audio = AudioContentDecoder()
         let text = TextContentDecoder()
+        let message = MessageContentDecoder()
         let application = ApplicationContentDecoder()
         let contentType = ContentTypeDecoder(parameter: parameter)
         let mainContent = MainContentDecoder(multipart: multipart,
                                              image: image,
+                                             video: video,
+                                             audio: audio,
                                              text: text,
+                                             message: message,
                                              application: application,
                                              contentType: contentType)
         let header = HeaderDecoder(line: line)

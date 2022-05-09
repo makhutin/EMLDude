@@ -19,12 +19,9 @@ public struct MultipartContent: Content {
 
     public let headears: [String : String]
     public let subType: SubTypes
-    public let id: String?
-    public let charset: Charset?
-    public let name: String?
-    public let transferEncoding: ContentTransferEncoding?
-
     public let contents: [Content]
+    public var rawData: String
+    public var info: ContentInfo
 
     public var type: ContentType {
         return .multipart
@@ -35,7 +32,7 @@ extension MultipartContent: CustomStringConvertible {
     public var description: String {
         return [
             "Content-Type: multipart/\(self.subType)",
-            self.generalDescription,
+            self.info.description,
             self.contentDescription
         ].joined(separator: "\n")
     }

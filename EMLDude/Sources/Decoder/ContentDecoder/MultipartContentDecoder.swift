@@ -20,14 +20,13 @@ internal final class MultipartContentDecoder: ContentDecoding {
               let boundary = contentType.boundary else { return nil }
 
         assert(self.mainDecoder != nil, "Main decoder should be exist")
-
+        
+        let info = ContentInfo(headers: headers, contentType: contentType)
         return MultipartContent(headears: headers,
                                 subType: subType,
-                                id: headers[ContentKeys.id.rawValue],
-                                charset: contentType.charset,
-                                name: contentType.name,
-                                transferEncoding: nil,
-                                contents: self.contents(from: rawData, boundary: boundary))
+                                contents: self.contents(from: rawData, boundary: boundary),
+                                rawData: rawData,
+                                info: info)
     }
 
     private func contents(from rawData: String, boundary: Boundary) -> [Content] {

@@ -13,14 +13,8 @@ internal final class ImageContentDecoder: ContentDecoding {
               let subType = ImageContent.SubTypes(rawValue: contentType.subType) else { return nil }
 
 
-        let transeferEncoding = headers[ContentKeys.transferEncoding.rawValue].flatMap { ContentTransferEncoding(rawValue: $0) }
-        return ImageContent(headears: headers,
-                            subType: subType,
-                            id: headers[ContentKeys.id.rawValue],
-                            charset: contentType.charset,
-                            transferEncoding: transeferEncoding,
-                            name: contentType.name,
-                            rawData: rawData.withoutCarriage)
+        let info = ContentInfo(headers: headers, contentType: contentType)
+        return ImageContent(headears: headers, subType: subType, rawData: rawData, info: info)
     }
 
     private func shouldStartDecoding(with subType: String) -> Bool {
