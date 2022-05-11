@@ -38,4 +38,10 @@ extension String {
     var withoutQuotes: String {
         return self.removeCharacters(characters: "\"\'")
     }
+
+    var base64decode: String? {
+        let paddedLength = self.count + (4 - (self.count % 4))
+        let base64WithPadding = self.padding(toLength: paddedLength, withPad: "=", startingAt: 0)
+        return Data(base64Encoded: base64WithPadding, options: .ignoreUnknownCharacters).flatMap { String(data: $0, encoding: .utf8) } ?? ""
+    }
 }
