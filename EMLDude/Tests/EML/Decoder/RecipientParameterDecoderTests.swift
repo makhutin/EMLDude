@@ -98,15 +98,3 @@ internal final class RecipientParameterDecoderTests: XCTestCase {
         }
     }
 }
-
-extension RecipientParameterDecoderTests {
-    final class MockBase64ParameterDecoder: Base64ParameterDecoding {
-        var parameters = [String]()
-        var result: String?
-
-        func decodeIfNeeded(parameter: String) -> String {
-            self.parameters.append(parameter)
-            return self.result ?? parameter
-        }
-    }
-}

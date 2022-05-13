@@ -15,12 +15,14 @@ internal final class Base64ParameterDecoderTests: XCTestCase {
         let testParameters = [
             "=?UTF-8?B?Rm9vQmFyQmF6?=",
             "=?utf-8?B?Rm9vQmFyQmF6?=",
-            "=?utf-8?B?SXRJc1NvbWVUZXN0?="
+            "=?utf-8?B?SXRJc1NvbWVUZXN0?=",
+            "=?utf-8?B?Rmlyc3RQYXJ0T2ZTdHJhbmdlVGVzdA==?= \n\r,;otherSymbols =?utf-8?B?c2Vjb25kUGFydE9mU3RyYW5nZVRlc3Q=?="
         ]
         let checkParameters = [
             "FooBarBaz",
             "FooBarBaz",
-            "ItIsSomeTest"
+            "ItIsSomeTest",
+            "FirstPartOfStrangeTestsecondPartOfStrangeTest"
         ]
         let decoder = Base64ParameterDecoder()
         zip(testParameters, checkParameters).forEach { (test, check) in

@@ -18,13 +18,24 @@ internal final class Base64ParameterDecoder: Base64ParameterDecoding {
     }
 
     func decodeIfNeeded(parameter: String) -> String {
-        guard let preambleRange = parameter.range(of: Constants.base64preamble, options: .caseInsensitive),
-              let postPreambleRange = parameter.range(of: Constants.base64postPreamble, options: .backwards) else {
-            return parameter
-        }
+        var result = [String]()
+        var preambleRange = parameter.range(of: Constants.base64preamble, options: .caseInsensitive)
+        var postPreambleRange = preambleRange.flatMap { parameter.range(of: Constants.base64postPreamble, range: $0.upperBound..<parameter.endIndex) }
 
-        let base64 = String(parameter[preambleRange.upperBound..<postPreambleRange.lowerBound])
-        let result = base64.base64decode ?? ""
+        while true {
+            guard let localPreambleRange = preambleRange,
+                  let localPostPreambleRange = postPreambleRange else { break }
+
+            result.append(self.decodeSubSequence(slice: parameter[localPreambleRange.upperBound..<localPostPreambleRange.lowerBound]))
+
+            preambleRange = parameter.range(of: Constants.base64preamble, options: .caseInsensitive, range: localPreambleRange.upperBound..<parameter.endIndex)
+            postPreambleRange = preambleRange.flatMap { parameter.range(of: Constants.base64postPreamble, range: $0.upperBound..<parameter.endIndex) }
+        }
+        return result.isEmpty ? parameter : result.joined()
+    }
+
+    func decodeSubSequence(slice: String.SubSequence) -> String {
+        let result = String(slice).base64decode ?? ""
         let lastIndex = result.lastIndex { $0 != "\0".first } ?? result.endIndex
         return String(result[...lastIndex])
     }
