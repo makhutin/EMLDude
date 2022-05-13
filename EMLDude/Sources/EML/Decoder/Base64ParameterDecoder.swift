@@ -7,7 +7,11 @@
 
 import Foundation
 
-internal final class Base64ParameterDecoder {
+internal protocol Base64ParameterDecoding {
+    func decodeIfNeeded(parameter: String) -> String
+}
+
+internal final class Base64ParameterDecoder: Base64ParameterDecoding {
     private enum Constants {
         static let base64preamble = "=?UTF-8?B?"
         static let base64postPreamble = "?="
@@ -20,6 +24,8 @@ internal final class Base64ParameterDecoder {
         }
 
         let base64 = String(parameter[preambleRange.upperBound..<postPreambleRange.lowerBound])
-        return base64.base64decode ?? ""
+        let result = base64.base64decode ?? ""
+        let lastIndex = result.lastIndex { $0 != "\0".first } ?? result.endIndex
+        return String(result[...lastIndex])
     }
 }

@@ -8,7 +8,7 @@
 import Foundation
 
 public struct Mail {
-    public var recipients: [Recipient]
+    public var recipients: Recipients
 }
 
 public extension Content {
