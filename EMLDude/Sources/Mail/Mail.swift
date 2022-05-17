@@ -10,6 +10,7 @@ import Foundation
 public struct Mail {
     public var recipients: Recipients
     public var subject: String?
+    public var date: Date?
 }
 
 public extension Content {

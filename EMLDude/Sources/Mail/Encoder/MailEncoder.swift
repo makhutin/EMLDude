@@ -10,16 +10,20 @@ import Foundation
 internal final class MailEncoder {
     private let recipients: RecipientsEncoder
     private let subject: SubjectEncoder
+    private let date: DateEncoder
 
     init(recipients: RecipientsEncoder,
-         subject: SubjectEncoder) {
+         subject: SubjectEncoder,
+         date: DateEncoder) {
         self.recipients = recipients
         self.subject = subject
+        self.date = date
     }
 
     func encode(from content: Content) -> Mail {
         let recipients = self.recipients.recipients(from: content)
         let subject = self.subject.subject(from: content)
-        return Mail(recipients: recipients, subject: subject)
+        let date = self.date.date(from: content)
+        return Mail(recipients: recipients, subject: subject, date: date)
     }
 }

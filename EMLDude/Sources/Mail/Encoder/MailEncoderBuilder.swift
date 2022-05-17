@@ -13,6 +13,7 @@ internal enum MailEncoderBuilder {
         let recipientParameter = RecipientParameterDecoder(base64Decoder: base64Decoder)
         let recipients = RecipientsEncoder(recipientParameterDecoder: recipientParameter)
         let subject = SubjectEncoder(base64ParameterDecoder: base64Decoder)
-        return MailEncoder(recipients: recipients, subject: subject)
+        let date = DateEncoder()
+        return MailEncoder(recipients: recipients, subject: subject, date: date)
     }
 }

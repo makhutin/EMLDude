@@ -22,9 +22,8 @@ internal final class Base64ParameterDecoder: Base64ParameterDecoding {
         var preambleRange = parameter.range(of: Constants.base64preamble, options: .caseInsensitive)
         var postPreambleRange = preambleRange.flatMap { parameter.range(of: Constants.base64postPreamble, range: $0.upperBound..<parameter.endIndex) }
 
-        while true {
-            guard let localPreambleRange = preambleRange,
-                  let localPostPreambleRange = postPreambleRange else { break }
+        while let localPreambleRange = preambleRange,
+              let localPostPreambleRange = postPreambleRange {
 
             result.append(self.decodeSubSequence(slice: parameter[localPreambleRange.upperBound..<localPostPreambleRange.lowerBound]))
 
