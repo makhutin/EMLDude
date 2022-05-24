@@ -12,6 +12,6 @@ internal final class TextContentDecoder: ContentDecoding {
         guard let subType = TextContent.SubTypes(rawValue: contentType.subType) else { return nil }
 
         let info = ContentInfo(headers: headers, contentType: contentType)
-        return TextContent(headears: headers, subType: subType, rawData: rawData.withoutCarriage, info: info)
+        return TextContent(headears: headers, subType: subType, rawData: rawData, info: info)
     }
 }
