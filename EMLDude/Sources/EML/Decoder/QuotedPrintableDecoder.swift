@@ -74,6 +74,7 @@ internal final class QuotedPrintableDecoder {
                 result.append(char)
             }
         }
+        saveCharFromBufferAndClearBuffers()
         return String(result)
     }
 
