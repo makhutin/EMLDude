@@ -9,9 +9,11 @@ import Foundation
 
 internal final class TextBodyEncoder: BodyContentEncoding {
     private let quotedPrintable: QuotedPrintableDecoder
+    private let base64: Base64BodyDecoder
 
-    init(quotedPrintable: QuotedPrintableDecoder) {
+    init(quotedPrintable: QuotedPrintableDecoder, base64: Base64BodyDecoder) {
         self.quotedPrintable = quotedPrintable
+        self.base64 = base64
     }
 
     func body(content: Content) -> String? {
@@ -19,7 +21,7 @@ internal final class TextBodyEncoder: BodyContentEncoding {
 
         switch content.info.transferEncoding {
         case .base64:
-            return nil
+            return self.base64.decode(data: content.rawData)
         case .bit7, .bit8, .binary:
             return nil
         case .quotedPrintable:

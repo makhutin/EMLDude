@@ -15,8 +15,11 @@ internal enum MailEncoderBuilder {
         let subject = SubjectEncoder(base64ParameterDecoder: base64ParameterDecoder)
         let date = DateEncoder()
         let quotedPrintable = QuotedPrintableDecoder()
-        let text = TextBodyEncoder(quotedPrintable: quotedPrintable)
-        let body = BodyEncoder(text: text)
+        let base64body = Base64BodyDecoder()
+        let text = TextBodyEncoder(quotedPrintable: quotedPrintable, base64: base64body)
+        let multipart = MultipartBodyEncoder()
+        let body = BodyEncoder(text: text, multipart: multipart)
+        multipart.bodyEncoder = body
         return MailEncoder(recipients: recipients, subject: subject, date: date, body: body)
     }
 }
