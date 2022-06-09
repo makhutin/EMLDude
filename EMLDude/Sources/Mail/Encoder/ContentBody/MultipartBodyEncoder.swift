@@ -9,6 +9,11 @@ import Foundation
 
 internal final class MultipartBodyEncoder: BodyContentEncoding {
     weak var bodyEncoder: BodyEncoder?
+    private let related: MultipartRelatedBodyEncoder
+
+    init(related: MultipartRelatedBodyEncoder) {
+        self.related = related
+    }
 
     func body(content: Content) -> String? {
         guard let content = content as? MultipartContent else { return nil }
@@ -18,6 +23,8 @@ internal final class MultipartBodyEncoder: BodyContentEncoding {
         switch content.subType {
         case .alternative:
             return self.alternativeBody(content: content)
+        case .related:
+            return self.related.body(content: content)
         default:
             return nil
         }
